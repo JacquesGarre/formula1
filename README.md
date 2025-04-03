@@ -8,3 +8,4 @@
 ### Local development
 
 - `npm start`
+- Visit `http://localhost:4200`
