@@ -114,7 +114,7 @@ export class TrackViewerComponent implements OnChanges {
   
     this.animationStartTime = performance.now();
   
-    // 📐 Precompute bounds
+    // bounds
     const xs = positions.map(p => p.x);
     const ys = positions.map(p => p.y);
     const minX = Math.min(...xs);
