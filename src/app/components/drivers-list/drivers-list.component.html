@@ -1,0 +1,23 @@
+<ul class="space-y-2">
+    <li *ngFor="let driver of drivers"
+        class="flex items-center justify-between p-2 bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
+        <div class="flex items-center space-x-3">
+            <input type="checkbox" [checked]="driver.selected" (change)="toggleDriver(driver.driver_number)"
+                class="form-checkbox w-5 h-5 text-blue-600" />
+
+            <div class="flex items-center space-x-3">
+                <img [src]="driver.headshot_url" alt="{{ driver.full_name }}"
+                    class="w-10 h-10 rounded-full object-cover border border-gray-300" />
+
+                <div class="flex flex-col">
+                    <span class="font-semibold text-gray-800">
+                        {{ driver.full_name }}
+                    </span>
+                    <span class="text-sm" [style.color]="'#' + driver.team_colour">
+                        {{ driver.team_name }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </li>
+</ul>

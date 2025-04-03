@@ -1,0 +1,8 @@
+<div class="space-y-2">
+    <select class="w-full p-2 border border-gray-300 rounded" (change)="onSelect($event)">
+        <option value="">Select a meeting</option>
+        <option *ngFor="let meeting of meetings" [value]="meeting.meeting_key">
+            {{ meeting.meeting_official_name }} - {{meeting.country_name}}
+        </option>
+    </select>
+</div>

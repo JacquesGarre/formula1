@@ -1,0 +1,11 @@
+<div class="space-y-2" *ngIf="sessions.length > 0">
+    <select class="w-full p-2 border border-gray-300 rounded" (change)="onSelect($event)">
+        <option value="">Select a session</option>
+        <option *ngFor="let session of sessions" [value]="session.session_key">
+            {{ session.session_name }}
+        </option>
+    </select>
+</div>
+<div *ngIf="meetingKey && sessions.length === 0" class="text-sm text-gray-500">
+    No sessions available for this meeting.
+</div>
