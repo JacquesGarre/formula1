@@ -1,1 +1,11 @@
-<p>sidebar works!</p>
+<div class="w-64 bg-gray-200 h-full p-4">
+    <h2 class="font-bold mb-2">Drivers</h2>
+    <ul class="space-y-2">
+        <li *ngFor="let car of cars">
+            <label class="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" [checked]="car.selected" (change)="toggleDriver(car.driver.name)" />
+                <span [style.color]="car.color">{{ car.driver.name }}</span>
+            </label>
+        </li>
+    </ul>
+</div>

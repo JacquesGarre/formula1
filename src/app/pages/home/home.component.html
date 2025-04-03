@@ -1,3 +1,7 @@
-<h1 class="text-3xl font-bold underline">
-    Hello world!
-</h1>
+<div class="flex min-h-screen">
+    <div class="flex-1">
+        <app-track-viewer [cars]="cars"></app-track-viewer>
+    </div>
+    <app-sidebar [cars]="cars" (toggle)="toggleCar($event)">
+    </app-sidebar>
+</div>
