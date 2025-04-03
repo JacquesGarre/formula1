@@ -16,8 +16,11 @@ export class TrackViewerComponent implements OnChanges {
   @Input() driverNumbers: number[] = [];
   @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
 
-  car: Car | null = null;
 
+  private car: Car | null = null;
+  private animationStartTime: number | null = null;
+  private playbackStartTimestamp: number | null = null; // in ms
+  private animationFrameId: number | null = null;
   private ctx!: CanvasRenderingContext2D | null;
 
   constructor(private http: HttpClient) { }
@@ -54,7 +57,8 @@ export class TrackViewerComponent implements OnChanges {
       .subscribe((data) => {
         const filtered = data.filter(pos => !(pos.x === 0 && pos.y === 0 && pos.z === 0));
         this.car!.positions = filtered;
-        this.draw();
+        this.startPlayback();
+        //this.draw();
       });
   }
 
@@ -67,9 +71,10 @@ export class TrackViewerComponent implements OnChanges {
   private draw() {
     const canvas = this.canvasRef.nativeElement;
     if (!this.ctx || !this.car || !this.car.positions.length) return;
-  
+
     const positions = this.car.positions.slice(0, 1000); // limit for test
-  
+    this.resetCanvas();
+
     // 1. Find bounds
     const xs = positions.map(p => p.x);
     const ys = positions.map(p => p.y);
@@ -77,35 +82,109 @@ export class TrackViewerComponent implements OnChanges {
     const maxX = Math.max(...xs);
     const minY = Math.min(...ys);
     const maxY = Math.max(...ys);
-  
-    this.resetCanvas();
-  
+
+
     // 2. Normalize all positions
-    const normalized = positions.map(pos => ({
-      x: ((pos.x - minX) / (maxX - minX)) * canvas.width,
-      y: canvas.height - ((pos.y - minY) / (maxY - minY)) * canvas.height
+
+
+    // 3. Draw the trail line
+
+
+  }
+
+
+
+
+
+
+
+  startPlayback() {
+    if (!this.car || !this.car.positions.length || !this.ctx) return;
+  
+    const canvas = this.canvasRef.nativeElement;
+  
+    const rawPositions = this.car.positions.slice(1000, 2000); // skip initial if needed // check for big gaps too
+    const baseTimestamp = new Date(rawPositions[0].date).getTime();
+  
+    // ⏱️ Convert timestamps to relativeTime
+    const positions = rawPositions.map(pos => ({
+      ...pos,
+      relativeTime: new Date(pos.date).getTime() - baseTimestamp
     }));
   
-    // 3. Draw the trail line
-    this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.6)';
-    this.ctx.lineWidth = 2;
-    this.ctx.beginPath();
+    this.animationStartTime = performance.now();
   
-    this.ctx.moveTo(normalized[0].x, normalized[0].y);
+    // 📐 Precompute bounds
+    const xs = positions.map(p => p.x);
+    const ys = positions.map(p => p.y);
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minY = Math.min(...ys);
+    const maxY = Math.max(...ys);
   
-    for (let i = 1; i < normalized.length; i++) {
-      this.ctx.lineTo(normalized[i].x, normalized[i].y);
-    }
+    let lastFrameDisplayed = -1; // frame in 100ms steps
+    
+    const refreshRate = 50 // every 100ms
+
+    const animate = (now: number) => {
+      const elapsed = now - this.animationStartTime!;
+      const currentStep = Math.floor(elapsed / refreshRate); 
   
-    this.ctx.stroke();
+      if (currentStep !== lastFrameDisplayed) {
+        lastFrameDisplayed = currentStep;
   
-    // 4. Optionally draw the latest position as a circle
-    const last = normalized[normalized.length - 1];
-    this.ctx.fillStyle = 'red';
-    this.ctx.beginPath();
-    this.ctx.arc(last.x, last.y, 5, 0, 2 * Math.PI);
-    this.ctx.fill();
+        const targetTime = currentStep * refreshRate;
   
-    console.log(`Drawn ${positions.length} points + path`);
+        // Find the position closest to the current 100ms target time
+        const closest = positions.reduce((prev, curr) =>
+          Math.abs(curr.relativeTime - targetTime) < Math.abs(prev.relativeTime - targetTime)
+            ? curr
+            : prev
+        );
+  
+        // Normalize to canvas
+        const canvasX = ((closest.x - minX) / (maxX - minX)) * canvas.width;
+        const canvasY = canvas.height - ((closest.y - minY) / (maxY - minY)) * canvas.height;
+  
+        // clear canvas
+        this.ctx!.clearRect(0, 0, canvas.width, canvas.height);
+
+
+        // draw the circuit
+        const normalized = positions.map(pos => ({
+          x: ((pos.x - minX) / (maxX - minX)) * canvas.width,
+          y: canvas.height - ((pos.y - minY) / (maxY - minY)) * canvas.height
+        }));
+        this.ctx!.strokeStyle = 'rgba(255, 0, 0, 0.6)';
+        this.ctx!.lineWidth = 2;
+        this.ctx!.beginPath();
+        this.ctx!.moveTo(normalized[0].x, normalized[0].y);
+        for (let i = 1; i < normalized.length; i++) {
+          this.ctx!.lineTo(normalized[i].x, normalized[i].y);
+        }
+        this.ctx!.stroke();
+
+
+        this.ctx!.fillStyle = 'red';
+        this.ctx!.beginPath();
+        this.ctx!.arc(canvasX, canvasY, 6, 0, 2 * Math.PI);
+        this.ctx!.fill();
+
+
+      }
+  
+      // Keep animating until the end of the data
+      const totalDuration = positions[positions.length - 1].relativeTime;
+      if (elapsed <= totalDuration) {
+        this.animationFrameId = requestAnimationFrame(animate);
+      } else {
+        console.log('🏁 Animation complete');
+      }
+    };
+  
+    this.animationFrameId = requestAnimationFrame(animate);
   }
+  
+  
+  
 }
