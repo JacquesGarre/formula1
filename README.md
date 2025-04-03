@@ -10,3 +10,7 @@
 
 - `npm start`
 - Visit `http://localhost:4200`
+
+### Live Demo
+
+- Visit `https://jacquesgarre.github.io/formula1/`
