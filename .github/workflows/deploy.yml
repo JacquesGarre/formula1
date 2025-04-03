@@ -29,4 +29,4 @@ jobs:
         with:
           token: ${{ secrets.GH_TOKEN }}
           branch: gh-pages 
-          folder: dist/formula1 
+          folder: dist/formula1/browser 
