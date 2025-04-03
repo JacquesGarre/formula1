@@ -4,6 +4,7 @@
 
 - node v22+
 - angular/cli (`npm install -g @angular/cli`)
+- `npm install -g angular-cli-ghpages`
 
 ### Local development
 
