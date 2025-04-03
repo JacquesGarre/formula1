@@ -106,7 +106,7 @@ export class TrackViewerComponent implements OnChanges {
     const rawPositions = this.car.positions.slice(1000, 2000); // skip initial if needed // check for big gaps too
     const baseTimestamp = new Date(rawPositions[0].date).getTime();
   
-    // ⏱️ Convert timestamps to relativeTime
+    // Convert timestamps to relativeTime
     const positions = rawPositions.map(pos => ({
       ...pos,
       relativeTime: new Date(pos.date).getTime() - baseTimestamp
@@ -122,7 +122,7 @@ export class TrackViewerComponent implements OnChanges {
     const minY = Math.min(...ys);
     const maxY = Math.max(...ys);
   
-    let lastFrameDisplayed = -1; // frame in 100ms steps
+    let lastFrameDisplayed = -1; 
     
     const refreshRate = 50 // every 100ms
 
@@ -170,7 +170,6 @@ export class TrackViewerComponent implements OnChanges {
         this.ctx!.arc(canvasX, canvasY, 6, 0, 2 * Math.PI);
         this.ctx!.fill();
 
-
       }
   
       // Keep animating until the end of the data
@@ -178,7 +177,7 @@ export class TrackViewerComponent implements OnChanges {
       if (elapsed <= totalDuration) {
         this.animationFrameId = requestAnimationFrame(animate);
       } else {
-        console.log('🏁 Animation complete');
+        console.log('Animation complete');
       }
     };
   
