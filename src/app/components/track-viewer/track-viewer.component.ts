@@ -35,6 +35,8 @@ export class TrackViewerComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     console.log("viewer - ngOnChanges")
     if (changes['meetingKey'] || changes['sessionKey'] || changes['driverNumbers']) {
+      this.car = null;
+      this.resetCanvas();
       if (this.meetingKey == null || this.sessionKey == null || this.driverNumbers.length == 0) {
         return;
       }
@@ -50,29 +52,60 @@ export class TrackViewerComponent implements OnChanges {
     }
     this.http.get<CarPosition[]>(`${environment.openF1ApiUrl}/location?meeting_key=${this.meetingKey}&session_key=${this.sessionKey}&driver_number=${driverNumber}`)
       .subscribe((data) => {
-        console.log("INITIAL POSITIONS :", data.length)
         const filtered = data.filter(pos => !(pos.x === 0 && pos.y === 0 && pos.z === 0));
         this.car!.positions = filtered;
-        console.log("AFTER :", this.car!.positions.length)
         this.draw();
       });
   }
 
-  private draw() {
-    console.log("viewer - drawing car")
+  private resetCanvas() {
     const canvas = this.canvasRef.nativeElement;
     if (!this.ctx) return;
-
-    const x = this.car!.positions[0].x;
-    const y = this.car!.positions[0].y;
-
     this.ctx.clearRect(0, 0, canvas.width, canvas.height);
-    this.ctx!.fillStyle = 'red'; // TODO: Color of the driver
-    this.ctx!.beginPath();
-    this.ctx!.arc(100, 100, 8, 0, 2 * Math.PI);
-    this.ctx!.fill();
+  }
 
-    console.log("viewer - car drawn")
-      
+  private draw() {
+    const canvas = this.canvasRef.nativeElement;
+    if (!this.ctx || !this.car || !this.car.positions.length) return;
+  
+    const positions = this.car.positions.slice(0, 1000); // limit for test
+  
+    // 1. Find bounds
+    const xs = positions.map(p => p.x);
+    const ys = positions.map(p => p.y);
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minY = Math.min(...ys);
+    const maxY = Math.max(...ys);
+  
+    this.resetCanvas();
+  
+    // 2. Normalize all positions
+    const normalized = positions.map(pos => ({
+      x: ((pos.x - minX) / (maxX - minX)) * canvas.width,
+      y: canvas.height - ((pos.y - minY) / (maxY - minY)) * canvas.height
+    }));
+  
+    // 3. Draw the trail line
+    this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.6)';
+    this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+  
+    this.ctx.moveTo(normalized[0].x, normalized[0].y);
+  
+    for (let i = 1; i < normalized.length; i++) {
+      this.ctx.lineTo(normalized[i].x, normalized[i].y);
+    }
+  
+    this.ctx.stroke();
+  
+    // 4. Optionally draw the latest position as a circle
+    const last = normalized[normalized.length - 1];
+    this.ctx.fillStyle = 'red';
+    this.ctx.beginPath();
+    this.ctx.arc(last.x, last.y, 5, 0, 2 * Math.PI);
+    this.ctx.fill();
+  
+    console.log(`Drawn ${positions.length} points + path`);
   }
 }
