@@ -19,6 +19,7 @@ export class SessionDropdownComponent {
   constructor(private http: HttpClient) { }
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.sessions = [];
     if (changes['meetingKey'] && this.meetingKey !== null) {
       this.fetchSessions(this.meetingKey);
     }

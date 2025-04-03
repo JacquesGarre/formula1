@@ -11,6 +11,6 @@
 
     <div *ngIf="meetingKey && sessionKey">
         <h2 class="font-bold mb-2 mt-5">Drivers</h2>
-        <app-drivers-list [meetingKey]="meetingKey" [sessionKey]="sessionKey"></app-drivers-list>
+        <app-drivers-list [meetingKey]="meetingKey" [sessionKey]="sessionKey" (driverToggled)="onDriverToggled($event)"></app-drivers-list>
     </div>
 </div>

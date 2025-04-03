@@ -14,18 +14,33 @@ import { DriversListComponent } from "../drivers-list/drivers-list.component";
 export class SidebarComponent {
   @Input() drivers: Driver[] = [];
   @Output() driverToggled = new EventEmitter<number>();
-  @Output() meetingSelected = new EventEmitter<number>();
-  @Output() sessionSelected = new EventEmitter<number>();
+  @Output() meetingChanged = new EventEmitter<number>();
+  @Output() sessionChanged = new EventEmitter<number>();
 
   meetingKey: number | null = null;
   sessionKey: number | null = null;
+  driverNumbers: number[] = [];
 
   onMeetingSelected(meetingKey: number) {
+    console.log("sidebar - onMeetingSelected")
     this.meetingKey = meetingKey;
+    this.meetingChanged.emit(meetingKey);
   }
 
   onSessionSelected(sessionKey: number) {
+    console.log("sidebar - onSessionSelected")
     this.sessionKey = sessionKey;
+    this.sessionChanged.emit(sessionKey);
   }
 
+  onDriverToggled(driverNumber: number) {
+    console.log("sidebar - onDriverToggled")
+    const exists = this.driverNumbers.includes(driverNumber);
+    if (exists) {
+      this.driverNumbers = this.driverNumbers.filter(existingDriverNumber => existingDriverNumber !== driverNumber);
+    } else {
+      this.driverNumbers = [...this.driverNumbers, driverNumber];
+    }
+    this.driverToggled.emit(driverNumber);
+  }
 }

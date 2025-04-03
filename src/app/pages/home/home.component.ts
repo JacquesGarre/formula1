@@ -12,25 +12,28 @@ export class HomeComponent {
 
   meetingKey: number | null = null;
   sessionKey: number | null = null;
-  selectedDrivers: number[] = [];
+  driverNumbers: number[] = [];
 
   onMeetingChanged(meetingKey: number) {
+    console.log("home - onMeetingChanged")
     this.meetingKey = meetingKey;
     this.sessionKey = null;
-    this.selectedDrivers = [];
+    this.driverNumbers = [];
   }
 
   onSessionChanged(sessionKey: number) {
+    console.log("home - onSessionChanged")
     this.sessionKey = sessionKey;
-    this.selectedDrivers = [];
+    this.driverNumbers = [];
   }
 
   onDriverToggled(driverNumber: number) {
-    const exists = this.selectedDrivers.includes(driverNumber);
+    console.log("home - onDriverToggled")
+    const exists = this.driverNumbers.includes(driverNumber);
     if (exists) {
-      this.selectedDrivers = this.selectedDrivers.filter(existingDriverNumber => existingDriverNumber !== driverNumber);
+      this.driverNumbers = this.driverNumbers.filter(existingDriverNumber => existingDriverNumber !== driverNumber);
     } else {
-      this.selectedDrivers = [...this.selectedDrivers, driverNumber];
+      this.driverNumbers = [...this.driverNumbers, driverNumber];
     }
   }
 }

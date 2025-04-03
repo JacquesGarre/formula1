@@ -1,8 +1,8 @@
 <div class="flex min-h-screen">
     <div class="flex-1">
-        <!-- <app-track-viewer [cars]="cars"></app-track-viewer> -->
+        <app-track-viewer [meetingKey]="meetingKey" [sessionKey]="sessionKey" [driverNumbers]="driverNumbers"></app-track-viewer>
     </div>
-    <app-sidebar (meetingSelected)="onMeetingChanged($event)" (sessionSelected)="onSessionChanged($event)"
+    <app-sidebar (meetingChanged)="onMeetingChanged($event)" (sessionChanged)="onSessionChanged($event)"
         (driverToggled)="onDriverToggled($event)">
     </app-sidebar>
 </div>

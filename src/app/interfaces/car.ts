@@ -1,9 +1,6 @@
-import { Driver } from "./driver";
+import { CarPosition } from "./location";
 
 export interface Car {
-    driver: Driver;
-    x: number;
-    y: number;
-    color: string;
-    selected: boolean;
+    driver_number: number;
+    positions: CarPosition[];
 }
