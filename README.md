@@ -4,13 +4,14 @@
 
 - node v22+
 - angular/cli (`npm install -g @angular/cli`)
-- `npm install -g angular-cli-ghpages`
+
 
 ### Local development
 
+- `npm install`
 - `npm start`
 - Visit `http://localhost:4200`
 
 ### Live Demo
 
-- Visit `https://jacquesgarre.github.io/formula1/`
+- Visit `https://jacquesgarre.github.io/formula1/` (Watch for the network, the f1 open api often returns a 429 Http error : Rate exceeded.)
