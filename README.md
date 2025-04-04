@@ -14,4 +14,5 @@
 
 ### Live Demo
 
-- Visit `https://jacquesgarre.github.io/formula1/` (Watch for the network, the f1 open api often returns a 429 Http error : Rate exceeded.)
+- Visit `https://jacquesgarre.github.io/formula1/` 
+(Watch for the network, the f1 open api often returns a 429 Http error : Rate exceeded, especially on race week-ends)
